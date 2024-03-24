@@ -1,5 +1,4 @@
 #include <string.h>
-#include "vector.h"
 #include "matrix.h"
 #include "complex.h"
 #include "number.h"
@@ -9,13 +8,15 @@
 void printMenu()
 {
     printf("\n--- Menu ---\n");
-    printf("0. Show vectors\n");
-    printf("1. Create int vector\n");
-    printf("2. Create complex vector\n");
-    printf("3. Add element to int vector\n");
-    printf("4. Add element to complex vector\n");
-    printf("5. Sum vectors\n");
-    printf("6. Show vector by name\n");
+    printf("0. Show matrices\n");
+    printf("1. Create int matrix\n");
+    printf("2. Create complex matrix\n");
+    printf("3. Add element to int matrix\n");
+    printf("4. Add element to complex matrix\n");
+    printf("5. Sum matrices\n");
+    printf("6. Mult matrices\n");
+    printf("7. Matrix transpose\n");
+    printf("8. Show matrix by name\n");
     printf("Enter 'STOP' for finish.\n");
     printf("Choose action: ");
 }
@@ -23,12 +24,14 @@ void printMenu()
 //само меню можно дополнительно оптимизировать
 int main()
 {
+    // test
     Matrix a;
     matrixInit(&a, 2, 2, sizeof(int), NULL, NULL, NULL);
     return -1;
+    //
 
     // модульное тестирование перед переходом в меню
-    if (testBasicIntVectorsLogic() == -1)
+    if (testBasicIntMatricesLogic() == -1)
     {
         // нет смысла выполнять основной код, так как в тестах уже ошибка
         return -1;
@@ -37,7 +40,7 @@ int main()
     //---------------------------------
     printf("All tests completed successfully!\n");
 
-    VectorCollection collection = {NULL, 0};
+    MatrixCollection collection = {NULL, 0};
 
     while (1)
     {
@@ -56,106 +59,152 @@ int main()
         case 0:
         {
             char name[20];
-            printf("All vectors: ");
+            printf("All matrices: ");
             for (size_t i = 0; i < collection.size; i++)
             {
-                printf("%s ", collection.vectors[i].name);
+                printf("%s ", collection.matrices[i].name);
             }
             break;
         }
         case 1:
         {
+            // create int matrix
             char name[20];
-            printf("Enter int vector name: ");
+            printf("Enter int matrix name: ");
             scanf("%19s", name);
-            vectorAddToCollection(&collection, name, sizeof(int), numberSum, numberPrint);
+            matrixAddToCollection(&collection, name, sizeof(int), numberSum, numberPrint);
             break;
         }
         case 2:
         {
+            // create complex matrix
             char name[20];
-            printf("Enter complex vector name: ");
+            printf("Enter complex matrix name: ");
             scanf("%19s", name);
-            vectorAddToCollection(&collection, name, sizeof(Vector), complexSum, complexPrint);
+            matrixAddToCollection(&collection, name, sizeof(Complex), complexSum, complexPrint);
             break;
         }
         case 3:
-            // add element to int vector
+            // add element to int matrix
             {
                 char name[20];
-                printf("Enter int vector name: ");
+                printf("Enter int matrix name: ");
                 scanf("%19s", name);
-                Vector *vec = vectorFindInCollection(&collection, name);
+                Matrix *vec = matrixFindInCollection(&collection, name);
                 if (vec)
                 {
                     int value;
-                    printf("Enter integer to add to int vector: ");
+                    printf("Enter integer to add to int matrix: ");
                     scanf("%d", &value);
-                    vectorPushBack(vec, &value);
+                    matrixPushBack(vec, &value);
                 }
                 else
                 {
-                    printf("Vector not found.\n");
+                    printf("Matrix not found.\n");
                 }
                 break;
             }
         case 4:
-            // add element to complex vector
+            // add element to complex matrix
             {
                 char name[20];
-                printf("Enter complex vector name: ");
+                printf("Enter complex matrix name: ");
                 scanf("%19s", name);
-                Vector *vec = vectorFindInCollection(&collection, name);
+                Matrix *vec = matrixFindInCollection(&collection, name);
                 if (vec)
                 {
                     int real;
                     int imag;
                     printf("Enter two int numbers like this '3 4' to \
-                \ncreate complex '3r+4i' and add it to complex vector: ");
+                \ncreate complex '3r+4i' and add it to complex matrix: ");
                     scanf("%d %d", &real, &imag);
                     Complex complex = {real, imag};
-                    vectorPushBack(vec, &complex);
+                    matrixPushBack(vec, &complex);
                 }
                 else
                 {
-                    printf("Vector not found.\n");
+                    printf("Matrix not found.\n");
                 }
                 break;
             }
         case 5:
-            // sum vectors
+            // sum matrices
             {
                 char nameFirstArg[20];
                 char nameSecondArg[20];
                 char nameResult[20];
-                printf("Enter vector names like this 'v1 v2 res': ");
+                printf("Enter matrix names like this 'v1 v2 res': ");
                 scanf("%19s %19s %19s", nameFirstArg, nameSecondArg, nameResult);
-                Vector *vec1 = vectorFindInCollection(&collection, nameFirstArg);
-                Vector *vec2 = vectorFindInCollection(&collection, nameSecondArg);
-                Vector *vecRes = vectorFindInCollection(&collection, nameResult);
+                Matrix *vec1 = matrixFindInCollection(&collection, nameFirstArg);
+                Matrix *vec2 = matrixFindInCollection(&collection, nameSecondArg);
+                Matrix *vecRes = matrixFindInCollection(&collection, nameResult);
                 if (vec1 && vec2 && vecRes)
                 {
-                    vectorSum(vecRes, vec1, vec2);
+                    matrixSum(vecRes, vec1, vec2);
                 }
                 else
                 {
-                    printf("Some vectors not found.\n");
+                    printf("Some matrices not found.\n");
                 }
                 break;
             }
         case 6:
+            // mult matrices
+            {
+                char nameFirstArg[20];
+                char nameSecondArg[20];
+                char nameResult[20];
+                printf("Enter matrix names like this 'v1 v2 res': ");
+                scanf("%19s %19s %19s", nameFirstArg, nameSecondArg, nameResult);
+                Matrix *vec1 = matrixFindInCollection(&collection, nameFirstArg);
+                Matrix *vec2 = matrixFindInCollection(&collection, nameSecondArg);
+                Matrix *vecRes = matrixFindInCollection(&collection, nameResult);
+                if (vec1 && vec2 && vecRes)
+                {
+                    matrixSum(vecRes, vec1, vec2);
+                }
+                else
+                {
+                    printf("Some matrices not found.\n");
+                }
+                break;
+            }
+        case 7:
+            // matricx transpose
+            {
+                // транспонирование матрицы
+            //     char nameFirstArg[20];
+            //     char nameSecondArg[20];
+            //     char nameResult[20];
+            //     printf("Enter matrix names like this 'v1 v2 res': ");
+            //     scanf("%19s %19s %19s", nameFirstArg, nameSecondArg, nameResult);
+            //     Matrix *vec1 = matrixFindInCollection(&collection, nameFirstArg);
+            //     Matrix *vec2 = matrixFindInCollection(&collection, nameSecondArg);
+            //     Matrix *vecRes = matrixFindInCollection(&collection, nameResult);
+            //     if (vec1 && vec2 && vecRes)
+            //     {
+            //         matrixSum(vecRes, vec1, vec2);
+            //     }
+            //     else
+            //     {
+            //         printf("Some matrices not found.\n");
+            //     }
+            //     break;
+            // }
+        case 8:
         {
+            // show martix by name
             char name[20];
-            printf("Enter vector name for show: ");
+            printf("Enter matrix name for show: ");
             scanf("%19s", name);
-            Vector *vec = vectorFindInCollection(&collection, name);
+            Matrix *vec = matrixFindInCollection(&collection, name);
             if (vec)
             {
-                vectorPrintElements(vec);
+                matrixPrintElements(vec);
             }
             else
             {
-                printf("Vector not found.\n");
+                printf("Matrix not found.\n");
             }
             break;
         }
@@ -168,9 +217,9 @@ int main()
     // Освобождение ресурсов
     for (size_t i = 0; i < collection.size; i++)
     {
-        vectorFree(&collection.vectors[i].vector);
+        matrixFree(&collection.matrices[i].matrix);
     }
-    free(collection.vectors);
+    free(collection.matrices);
 
     return 0;
 }
