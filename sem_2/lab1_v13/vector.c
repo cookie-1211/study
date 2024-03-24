@@ -1,7 +1,7 @@
 #include "vector.h"
 #include <stdlib.h>
 #include <string.h>
-
+// 
 /*
     с-код, реализующий интерфейс для работы с векторами
 */
