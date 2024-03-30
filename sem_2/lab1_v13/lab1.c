@@ -17,7 +17,7 @@ void printMenu()
     printf("6. Mult matrices\n");
     printf("7. Matrix transpose\n");
     printf("8. Show matrix by name\n");
-    printf("Enter 'STOP' for finish.\n");
+    printf("Enter 'q' for finish.\n");
     printf("Choose action: ");
 }
 
@@ -42,7 +42,7 @@ int main()
         printMenu();
         scanf("%19s", input);
 
-        if (strcmp(input, "STOP") == 0)
+        if (strcmp(input, "q") == 0)
         {
             break;
         }
@@ -100,11 +100,11 @@ int main()
                 {
                     printf("Matrix %ld rows x %ld columns\n", m->rows, m->columns);
                     int value;
-                    for (unsigned int row = 0; row < m->rows; row++)
+                    for (size_t row = 0; row < m->rows; row++)
                     {
-                        for (unsigned int col = 0; col < m->columns; col++)
+                        for (size_t col = 0; col < m->columns; col++)
                         {
-                            printf("Enter integer to add into [%d][%d]: ", row, col);
+                            printf("Enter integer to add into [%ld][%ld]: ", row, col);
                             scanf("%d", &value);
                             setMatrixElement(m, row, col, &value);
                         }
@@ -117,21 +117,28 @@ int main()
                 break;
             }
         case 4:
-            // add element to complex matrix
+            // fill complex matrix
             {
                 char name[20];
                 printf("Enter complex matrix name: ");
                 scanf("%19s", name);
-                Matrix *vec = matrixFindInCollection(&collection, name);
-                if (vec)
+                Matrix *m = matrixFindInCollection(&collection, name);
+                if (m)
                 {
                     int real;
                     int imag;
-                    printf("Enter two int numbers like this '3 4' to \
-                \ncreate complex '3r+4i' and add it to complex matrix: ");
-                    scanf("%d %d", &real, &imag);
-                    Complex complex = {real, imag};
-                    // matrixPushBack(vec, &complex);
+                    printf("Matrix %ld rows x %ld columns\n", m->rows, m->columns);
+                    printf("To add complex '3r+4i' you should enter two int numbers '3 4' and press Enter\n");
+                    for (size_t row = 0; row < m->rows; row++)
+                    {
+                        for (size_t col = 0; col < m->columns; col++)
+                        {
+                            printf("Enter real and imag parrs of complex number to add into [%ld][%ld]: ", row, col);
+                            scanf("%d %d", &real, &imag);
+                            Complex complex = {real, imag};
+                            setMatrixElement(m, row, col, &complex);
+                        }
+                    }
                 }
                 else
                 {
@@ -182,26 +189,22 @@ int main()
                 break;
             }
         case 7:
-            // matricx transpose
+            // matrix transpose
             {
                 // транспонирование матрицы
-                //     char nameFirstArg[20];
-                //     char nameSecondArg[20];
-                //     char nameResult[20];
-                //     printf("Enter matrix names like this 'v1 v2 res': ");
-                //     scanf("%19s %19s %19s", nameFirstArg, nameSecondArg, nameResult);
-                //     Matrix *vec1 = matrixFindInCollection(&collection, nameFirstArg);
-                //     Matrix *vec2 = matrixFindInCollection(&collection, nameSecondArg);
-                //     Matrix *vecRes = matrixFindInCollection(&collection, nameResult);
-                //     if (vec1 && vec2 && vecRes)
-                //     {
-                //         matrixSum(vecRes, vec1, vec2);
-                //     }
-                //     else
-                //     {
-                //         printf("Some matrices not found.\n");
-                //     }
-                //     break;
+                char nameMatrix[20];
+                printf("Enter matrix name to transpose: ");
+                scanf("%19s", nameMatrix);
+                Matrix *m = matrixFindInCollection(&collection, nameMatrix);
+                if (m)
+                {
+                    matrixT(m);
+                }
+                else
+                {
+                    printf("Matrix to transpose not found.\n");
+                }
+                break;
             }
         case 8:
         {

@@ -7,7 +7,7 @@
     с-код, реализующий интерфейс для работы с векторами
 */
 
-int matrixInit(Matrix *v, unsigned int rows, unsigned int columns, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement)
+int matrixInit(Matrix *v, size_t rows, size_t columns, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement)
 {
     v->data = calloc(columns * rows, elemSize);
     if (v->data == NULL)
@@ -30,7 +30,7 @@ void matrixFree(Matrix *v)
     v->data = NULL;
 }
 
-int setMatrixElement(Matrix *v, unsigned int row, unsigned int column, const void *value)
+int setMatrixElement(Matrix *v, size_t row, size_t column, const void *value)
 {
     if (column > v->columns || row > v->rows)
     {
@@ -42,7 +42,7 @@ int setMatrixElement(Matrix *v, unsigned int row, unsigned int column, const voi
     return 0;
 }
 
-void *getMatrixElement(const Matrix *v, unsigned int row, unsigned int column)
+void *getMatrixElement(const Matrix *v, size_t row, size_t column)
 {
     if (column > v->columns || row > v->rows)
     {
@@ -67,8 +67,8 @@ int matrixSum(Matrix *res, const Matrix *v1, const Matrix *v2)
         return -2;
     }
 
-    unsigned int numElements = v1->columns * v1->rows;
-    for (unsigned int i = 0; i < numElements; i++)
+    size_t numElements = v1->columns * v1->rows;
+    for (size_t i = 0; i < numElements; i++)
     {
         v1->sumElements(res->data + i * res->elemSize, v1->data + i * v1->elemSize, v2->data + i * v2->elemSize);
     }
@@ -85,9 +85,9 @@ int matrixMult(Matrix *res, const Matrix *v1, const Matrix *v2)
         return -1;
     }
 
-    unsigned int resRows = v1->rows;
-    unsigned int resColumns = v2->columns;
-    unsigned int elemSize = v1->elemSize;
+    size_t resRows = v1->rows;
+    size_t resColumns = v2->columns;
+    size_t elemSize = v1->elemSize;
 
     // Выделяем память под результирующую матрицу
 
@@ -107,11 +107,11 @@ int matrixMult(Matrix *res, const Matrix *v1, const Matrix *v2)
     void *tmp1 = calloc(1, elemSize);
     void *tmp2 = calloc(1, elemSize);
     // Вычисление умножения матриц
-    for (unsigned int i = 0; i < resRows; i++)
+    for (size_t i = 0; i < resRows; i++)
     {
-        for (unsigned int j = 0; j < resColumns; j++)
+        for (size_t j = 0; j < resColumns; j++)
         {
-            for (unsigned int k = 0; k < v1->columns; k++)
+            for (size_t k = 0; k < v1->columns; k++)
             {
                 res->multElements(tmp1, getMatrixElement(v1, i, k), getMatrixElement(v2, k, j));
                 res->sumElements(tmp2, getMatrixElement(res, i, j), tmp1);
@@ -126,9 +126,9 @@ int matrixMult(Matrix *res, const Matrix *v1, const Matrix *v2)
 
 void matrixPrintElements(const Matrix *v)
 {
-    for (unsigned int row = 0; row < v->rows; row++)
+    for (size_t row = 0; row < v->rows; row++)
     {
-        for (unsigned int col = 0; col < v->columns; col++)
+        for (size_t col = 0; col < v->columns; col++)
         {
             v->printElement(getMatrixElement(v, row, col));
         }
@@ -138,8 +138,8 @@ void matrixPrintElements(const Matrix *v)
 
 void matrixAddToCollection(MatrixCollection *collection,
                            const char *name,
-                           unsigned int rows,
-                           unsigned int columns,
+                           size_t rows,
+                           size_t columns,
                            size_t elemSize,
                            SumMatrixElements addFunc,
                            MultMatrixElements multFunc,
@@ -164,9 +164,26 @@ Matrix *matrixFindInCollection(MatrixCollection *collection, const char *name)
     return NULL; // Не найден
 }
 
-// void matrixMult(Matrix* res, const Matrix* v1, const Matrix* v2);
-
-int matrixT(Matrix *res, const Matrix *v)
+int matrixT(Matrix *v)
 {
+    Matrix tmp;
+    int ok;
+    if (ok = matrixInit(&tmp, v->columns, v->rows, v->elemSize, NULL, NULL, NULL) != 0)
+    {
+        // failed init tmp matrix
+        return -1;
+    }
+    for (size_t row = 0; row < v->rows; row++)
+    {
+        for (size_t col = 0; col < v->columns; col++)
+        {
+            setMatrixElement(&tmp, col, row, getMatrixElement(v, row, col));
+        }
+    }
+    matrixFree(v);
+    v->data = tmp.data;
+    v->rows = tmp.rows;
+    v->columns = tmp.columns;
+
     return 0;
 }

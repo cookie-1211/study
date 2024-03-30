@@ -38,13 +38,13 @@ typedef struct
 // начинаем названия функций с имени хэдера, чтобы было понятно, какую библиотеку используем
 
 // Выделяет память под матрицу и инициализирует объект
-int matrixInit(Matrix *v, unsigned int rows, unsigned int columns, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement);
+int matrixInit(Matrix *v, size_t rows, size_t columns, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement);
 
 // Записывает в матрицу значение элемента по номеру строки и столбца
-int setMatrixElement(Matrix *v, unsigned int row, unsigned int column, const void *value);
+int setMatrixElement(Matrix *v, size_t row, size_t column, const void *value);
 
 // Получает указатель на элемент матрицы по номеру строки и столбца
-void *getMatrixElement(const Matrix *v, unsigned int row, unsigned int column);
+void *getMatrixElement(const Matrix *v, size_t row, size_t column);
 
 // Освобождает память, выделенную под объект "матрица"
 void matrixFree(Matrix *v);
@@ -53,14 +53,14 @@ int matrixSum(Matrix *res, const Matrix *v1, const Matrix *v2);
 
 int matrixMult(Matrix *res, const Matrix *v1, const Matrix *v2);
 
-int matrixT(Matrix *res, const Matrix *v);
+int matrixT(Matrix *v);
 
 void matrixPrintElements(const Matrix *v);
 
 void matrixAddToCollection(MatrixCollection *collection,
                            const char *name,
-                           unsigned int rows,
-                           unsigned int columns,
+                           size_t rows,
+                           size_t columns,
                            size_t elemSize,
                            SumMatrixElements addFunc,
                            MultMatrixElements multFunc,
