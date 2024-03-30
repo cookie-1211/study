@@ -1,6 +1,7 @@
 #include "matrix.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 /*
     с-код, реализующий интерфейс для работы с векторами
@@ -135,14 +136,20 @@ void matrixPrintElements(const Matrix *v)
     }
 }
 
-// возможно нехватает аргументов в функции
-void matrixAddToCollection(MatrixCollection *collection, const char *name, size_t elemSize, SumMatrixElements addFunc, PrintMatrixElement printFunc)
+void matrixAddToCollection(MatrixCollection *collection,
+                           const char *name,
+                           unsigned int rows,
+                           unsigned int columns,
+                           size_t elemSize,
+                           SumMatrixElements addFunc,
+                           MultMatrixElements multFunc,
+                           PrintMatrixElement printFunc)
 {
-    // collection->matrixs = realloc(collection->matrixs, (collection->size + 1) * sizeof(NamedMatrix));
-    // NamedMatrix *newVec = &collection->matrixs[collection->size];
-    // strncpy(newVec->name, name, sizeof(newVec->name));
-    // matrixInit(&newVec->matrix, elemSize, addFunc, printFunc);
-    // collection->size++;
+    collection->matrices = realloc(collection->matrices, (collection->size + 1) * sizeof(NamedMatrix));
+    NamedMatrix *newMatrix = &collection->matrices[collection->size];
+    strncpy(newMatrix->name, name, sizeof(newMatrix->name));
+    matrixInit(&newMatrix->matrix, rows, columns, elemSize, addFunc, multFunc, printFunc);
+    collection->size++;
 }
 
 Matrix *matrixFindInCollection(MatrixCollection *collection, const char *name)

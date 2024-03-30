@@ -11,8 +11,8 @@ void printMenu()
     printf("0. Show matrices\n");
     printf("1. Create int matrix\n");
     printf("2. Create complex matrix\n");
-    printf("3. Add element to int matrix\n");
-    printf("4. Add element to complex matrix\n");
+    printf("3. Fill int matrix\n");
+    printf("4. Fill complex matrix\n");
     printf("5. Sum matrices\n");
     printf("6. Mult matrices\n");
     printf("7. Matrix transpose\n");
@@ -64,33 +64,51 @@ int main()
         {
             // create int matrix
             char name[20];
+            int rows, columns;
             printf("Enter int matrix name: ");
             scanf("%19s", name);
-            matrixAddToCollection(&collection, name, sizeof(int), numberSum, numberPrint);
+            printf("Enter row number: ");
+            scanf("%d", &rows);
+            printf("Enter column number: ");
+            scanf("%d", &columns);
+
+            matrixAddToCollection(&collection, name, rows, columns, sizeof(int), numberSum, numberMult, numberPrint);
             break;
         }
         case 2:
         {
             // create complex matrix
             char name[20];
+            int rows, columns;
             printf("Enter complex matrix name: ");
             scanf("%19s", name);
-            matrixAddToCollection(&collection, name, sizeof(Complex), complexSum, complexPrint);
+            printf("Enter row number: ");
+            scanf("%d", &rows);
+            printf("Enter column number: ");
+            scanf("%d", &columns);
+            matrixAddToCollection(&collection, name, rows, columns, sizeof(Complex), complexSum, complexMult, complexPrint);
             break;
         }
         case 3:
-            // add element to int matrix
+            // fill int matrix
             {
                 char name[20];
                 printf("Enter int matrix name: ");
                 scanf("%19s", name);
-                Matrix *vec = matrixFindInCollection(&collection, name);
-                if (vec)
+                Matrix *m = matrixFindInCollection(&collection, name);
+                if (m)
                 {
+                    printf("Matrix %ld rows x %ld columns\n", m->rows, m->columns);
                     int value;
-                    printf("Enter integer to add to int matrix: ");
-                    scanf("%d", &value);
-                    // matrixPushBack(vec, &value);
+                    for (unsigned int row = 0; row < m->rows; row++)
+                    {
+                        for (unsigned int col = 0; col < m->columns; col++)
+                        {
+                            printf("Enter integer to add into [%d][%d]: ", row, col);
+                            scanf("%d", &value);
+                            setMatrixElement(m, row, col, &value);
+                        }
+                    }
                 }
                 else
                 {
@@ -127,14 +145,14 @@ int main()
                 char nameFirstArg[20];
                 char nameSecondArg[20];
                 char nameResult[20];
-                printf("Enter matrix names like this 'v1 v2 res': ");
+                printf("Enter matrix names like this 'm1 m2 res': ");
                 scanf("%19s %19s %19s", nameFirstArg, nameSecondArg, nameResult);
-                Matrix *vec1 = matrixFindInCollection(&collection, nameFirstArg);
-                Matrix *vec2 = matrixFindInCollection(&collection, nameSecondArg);
-                Matrix *vecRes = matrixFindInCollection(&collection, nameResult);
-                if (vec1 && vec2 && vecRes)
+                Matrix *m1 = matrixFindInCollection(&collection, nameFirstArg);
+                Matrix *m2 = matrixFindInCollection(&collection, nameSecondArg);
+                Matrix *mRes = matrixFindInCollection(&collection, nameResult);
+                if (m1 && m2 && mRes)
                 {
-                    matrixSum(vecRes, vec1, vec2);
+                    matrixSum(mRes, m1, m2);
                 }
                 else
                 {
@@ -148,14 +166,14 @@ int main()
                 char nameFirstArg[20];
                 char nameSecondArg[20];
                 char nameResult[20];
-                printf("Enter matrix names like this 'v1 v2 res': ");
+                printf("Enter matrix names like this 'm1 m2 res': ");
                 scanf("%19s %19s %19s", nameFirstArg, nameSecondArg, nameResult);
-                Matrix *vec1 = matrixFindInCollection(&collection, nameFirstArg);
-                Matrix *vec2 = matrixFindInCollection(&collection, nameSecondArg);
-                Matrix *vecRes = matrixFindInCollection(&collection, nameResult);
-                if (vec1 && vec2 && vecRes)
+                Matrix *m1 = matrixFindInCollection(&collection, nameFirstArg);
+                Matrix *m2 = matrixFindInCollection(&collection, nameSecondArg);
+                Matrix *mRes = matrixFindInCollection(&collection, nameResult);
+                if (m1 && m2 && mRes)
                 {
-                    matrixSum(vecRes, vec1, vec2);
+                    matrixMult(mRes, m1, m2);
                 }
                 else
                 {
@@ -191,10 +209,10 @@ int main()
             char name[20];
             printf("Enter matrix name for show: ");
             scanf("%19s", name);
-            Matrix *vec = matrixFindInCollection(&collection, name);
-            if (vec)
+            Matrix *m = matrixFindInCollection(&collection, name);
+            if (m)
             {
-                matrixPrintElements(vec);
+                matrixPrintElements(m);
             }
             else
             {

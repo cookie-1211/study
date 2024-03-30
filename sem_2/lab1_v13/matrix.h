@@ -57,7 +57,14 @@ int matrixT(Matrix *res, const Matrix *v);
 
 void matrixPrintElements(const Matrix *v);
 
-void matrixAddToCollection(MatrixCollection *collection, const char *name, size_t elemSize, SumMatrixElements addFunc, PrintMatrixElement printFunc);
+void matrixAddToCollection(MatrixCollection *collection,
+                           const char *name,
+                           unsigned int rows,
+                           unsigned int columns,
+                           size_t elemSize,
+                           SumMatrixElements addFunc,
+                           MultMatrixElements multFunc,
+                           PrintMatrixElement printFunc);
 
 Matrix *matrixFindInCollection(MatrixCollection *collection, const char *name);
 
