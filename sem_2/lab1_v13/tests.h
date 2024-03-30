@@ -13,6 +13,8 @@ int testMatrixFill();  // return 0 - OK, -1 - ERROR
 int testMatrixSum();  // return 0 - OK, -1 - ERROR
 // тест умножения матриц
 int testMatrixMult();  // return 0 - OK, -1 - ERROR
+// тест транспонирования матриц
+int testMatrixT();  // return 0 - OK, -1 - ERROR
 
 // необходимо добавить остальные тесты для покрытия всего функционала и запустить их в мейне перед основной логикой
 

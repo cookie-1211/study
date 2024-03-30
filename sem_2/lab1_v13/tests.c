@@ -3,15 +3,19 @@
 
 int testMatrixLogic()
 {
-    if (-1 == testMatrixFill())
+    if (testMatrixFill() != 0)
     {
         return -1;
     }
-    if (-1 == testMatrixSum())
+    if (testMatrixSum() != 0)
     {
         return -1;
     }
-    if (-1 == testMatrixMult())
+    if (testMatrixMult() != 0)
+    {
+        return -1;
+    }
+    if (testMatrixT() != 0)
     {
         return -1;
     }
@@ -41,7 +45,7 @@ int testMatrixFill()
             val = (int *)getMatrixElement(&m, i, j);
             if (*val != i + j)
             {
-                printf("ERR: то что записали не соответствует тому что прочитали\n");
+                printf("ERR: unexpected result when reading written data\n");
                 return -1;
             }
         }
@@ -75,7 +79,7 @@ int testMatrixSum()
         }
     if (ok = matrixSum(&result, &m1, &m2) != 0)
     {
-        printf("ERR: ошибка операции сложения, код %d\n", ok);
+        printf("ERR: summ error, code %d\n", ok);
         return -1;
     }
     for (int i = 0; i < 20; i++)
@@ -85,7 +89,7 @@ int testMatrixSum()
             val = (int *)getMatrixElement(&result, i, j);
             if (*val != 3)
             {
-                printf("ERR: результат сложения 1+2 не ревен 3\n");
+                printf("ERR: unexpected summing result\n");
                 return -1;
             }
         }
@@ -129,7 +133,7 @@ int testMatrixMult()
 
     if (ok = matrixMult(&result, &m1, &m2) != 0)
     {
-        printf("ERR: ошибка операции умножения, код %d\n", ok);
+        printf("ERR: multilplication error, code %d\n", ok);
         return -1;
     }
     // matrixPrintElements(&result);
@@ -145,7 +149,7 @@ int testMatrixMult()
             val = (int *)getMatrixElement(&result, i, j);
             if (*val != reference[i][j])
             {
-                printf("ERR: результат умножения не соответствует ожиданиям. [%d][%d]=%d, ожидалось %d\n", i, j, *val, reference[i][j]);
+                printf("ERR: Unexpected multiply result. [%d][%d]=%d, expected %d\n", i, j, *val, reference[i][j]);
                 return -1;
             }
         }
@@ -154,5 +158,51 @@ int testMatrixMult()
     matrixFree(&m1);
     matrixFree(&m2);
     matrixFree(&result);
+    return 0;
+}
+
+int testMatrixT()
+{
+    Matrix m;
+    int ok;
+    if (ok = matrixInit(&m, 2, 3, sizeof(int), numberSum, numberMult, numberPrint) != 0)
+    {
+        return -1;
+    }
+
+    for (int row = 0, v = 0; row < m.rows; row++)
+        for (int col = 0; col < m.columns; col++)
+        {
+            v++;
+            setMatrixElement(&m, row, col, &v);
+        }
+    // matrixPrintElements(&m);
+
+    int reference[3][2] = {{1, 4},
+                           {2, 5},
+                           {3, 6}};
+    matrixT(&m);
+    // matrixPrintElements(&m);
+
+    if (m.rows != 3 || m.columns != 2)
+    {
+        return -1;
+    }
+    for (int row = 0; row < m.rows; row++)
+    {
+        for (int col = 0; col < m.columns; col++)
+        {
+            int *val;
+            val = (int *)getMatrixElement(&m, row, col);
+            if (*val != reference[row][col])
+            {
+                printf("ERR: Unexpected transpose result. [%d][%d]=%d, expected %d\n", row, col, *val, reference[row][col]);
+                return -2;
+            }
+        }
+    }
+
+
+    matrixFree(&m);
     return 0;
 }
