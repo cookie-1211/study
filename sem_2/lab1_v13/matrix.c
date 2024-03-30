@@ -6,7 +6,7 @@
     с-код, реализующий интерфейс для работы с векторами
 */
 
-int matrixInit(Matrix *v, unsigned int columns, unsigned int rows, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement)
+int matrixInit(Matrix *v, unsigned int rows, unsigned int columns, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement)
 {
     v->data = calloc(columns * rows, elemSize);
     if (v->data == NULL)
@@ -29,14 +29,25 @@ void matrixFree(Matrix *v)
     v->data = NULL;
 }
 
-void setMatrixElement(Matrix *v, unsigned int column, unsigned int row, const void *value)
+int setMatrixElement(Matrix *v, unsigned int row, unsigned int column, const void *value)
 {
+    if (column > v->columns || row > v->rows)
+    {
+        // index out fo range
+        return -1;
+    }
     size_t index = (row * v->columns + column) * v->elemSize;
     memcpy(v->data + index, value, v->elemSize);
+    return 0;
 }
 
-void *getMatrixElement(const Matrix *v, unsigned int column, unsigned int row)
+void *getMatrixElement(const Matrix *v, unsigned int row, unsigned int column)
 {
+    if (column > v->columns || row > v->rows)
+    {
+        // index out fo range
+        return NULL;
+    }
     size_t index = (row * v->columns + column) * v->elemSize;
     return v->data + index;
 }
@@ -77,28 +88,11 @@ int matrixMult(Matrix *res, const Matrix *v1, const Matrix *v2)
     unsigned int resColumns = v2->columns;
     unsigned int elemSize = v1->elemSize;
 
-    // переписать отсюда
     // Выделяем память под результирующую матрицу
 
     if (ok = matrixInit(res, resColumns, resRows, elemSize, v1->sumElements, v1->multElements, v1->printElement) != 0)
     {
         return -2;
-    }
-
-    // Вычисление умножения матриц
-    for (unsigned int i = 0; i < resRows; i++)
-    {
-        for (unsigned int j = 0; j < resColumns; j++)
-        {
-            for (unsigned int k = 0; k < v1->columns; k++)
-            {
-                void *resElem = (char *)res->data + (i * resColumns + j) * elemSize;
-                void *v1Elem = (char *)v1->data + (i * v1->columns + k) * elemSize;
-                void *v2Elem = (char *)v2->data + (k * v2->columns + j) * elemSize;
-                v1->sumElements(resElem, resElem, resElem);
-                v1->multElements(resElem, v1Elem, v2Elem);
-            }
-        }
     }
 
     // Устанавливаем параметры результирующей матрицы
@@ -108,15 +102,37 @@ int matrixMult(Matrix *res, const Matrix *v1, const Matrix *v2)
     res->sumElements = v1->sumElements;
     res->multElements = v1->multElements;
     res->printElement = v1->printElement;
+
+    void *tmp1 = calloc(1, elemSize);
+    void *tmp2 = calloc(1, elemSize);
+    // Вычисление умножения матриц
+    for (unsigned int i = 0; i < resRows; i++)
+    {
+        for (unsigned int j = 0; j < resColumns; j++)
+        {
+            for (unsigned int k = 0; k < v1->columns; k++)
+            {
+                res->multElements(tmp1, getMatrixElement(v1, i, k), getMatrixElement(v2, k, j));
+                res->sumElements(tmp2, getMatrixElement(res, i, j), tmp1);
+                setMatrixElement(res, i, j, tmp2);
+            }
+        }
+    }
+    free(tmp1);
+    free(tmp2);
     return 0;
 }
 
 void matrixPrintElements(const Matrix *v)
 {
-    // for (size_t i = 0; i < v->size; i++)
-    // {
-    //     v->printElement((const char *)v->data + i * v->elemSize);
-    // }
+    for (unsigned int row = 0; row < v->rows; row++)
+    {
+        for (unsigned int col = 0; col < v->columns; col++)
+        {
+            v->printElement(getMatrixElement(v, row, col));
+        }
+        printf("\n");
+    }
 }
 
 // возможно нехватает аргументов в функции

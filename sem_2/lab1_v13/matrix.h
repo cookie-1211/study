@@ -15,8 +15,8 @@ typedef void (*PrintMatrixElement)(const void *el);
 typedef struct
 {
     void *data;                      // Указатель на элементы
-    size_t columns;                  // Количество столбцов
     size_t rows;                     // Количество строк
+    size_t columns;                  // Количество столбцов
     size_t elemSize;                 // Размер одного элемента
     SumMatrixElements sumElements;   // Функция сложения
     MultMatrixElements multElements; // Функция умножения
@@ -38,13 +38,13 @@ typedef struct
 // начинаем названия функций с имени хэдера, чтобы было понятно, какую библиотеку используем
 
 // Выделяет память под матрицу и инициализирует объект
-int matrixInit(Matrix *v, unsigned int columns, unsigned int rows, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement);
+int matrixInit(Matrix *v, unsigned int rows, unsigned int columns, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement);
 
 // Записывает в матрицу значение элемента по номеру строки и столбца
-void setMatrixElement(Matrix *v, unsigned int column, unsigned int row, const void *value);
+int setMatrixElement(Matrix *v, unsigned int row, unsigned int column, const void *value);
 
 // Получает указатель на элемент матрицы по номеру строки и столбца
-void *getMatrixElement(const Matrix *v, unsigned int column, unsigned int row);
+void *getMatrixElement(const Matrix *v, unsigned int row, unsigned int column);
 
 // Освобождает память, выделенную под объект "матрица"
 void matrixFree(Matrix *v);
