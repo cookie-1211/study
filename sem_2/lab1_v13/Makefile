@@ -1,6 +1,6 @@
 all: main
 
-main: lab1.o complex.o vector.o number.o matrix.o tests.o
+main: lab1.o complex.o number.o matrix.o tests.o
 	gcc *.o -o main
 
 complex.o: complex.c
@@ -8,9 +8,6 @@ complex.o: complex.c
 
 number.o: number.c
 	gcc -c number.c
-
-vector.o: vector.c	
-	gcc -c vector.c
 
 matrix.o: matrix.c
 	gcc -c matrix.c

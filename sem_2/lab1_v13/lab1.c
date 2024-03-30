@@ -3,7 +3,7 @@
 #include "complex.h"
 #include "number.h"
 #include "tests.h"
-// 
+//
 
 void printMenu()
 {
@@ -21,17 +21,11 @@ void printMenu()
     printf("Choose action: ");
 }
 
-//само меню можно дополнительно оптимизировать
+// само меню можно дополнительно оптимизировать
 int main()
 {
-    // test
-    Matrix a;
-    matrixInit(&a, 2, 2, sizeof(int), NULL, NULL, NULL);
-    return -1;
-    //
-
     // модульное тестирование перед переходом в меню
-    if (testBasicIntMatricesLogic() == -1)
+    if (testMatrixLogic() == -1)
     {
         // нет смысла выполнять основной код, так как в тестах уже ошибка
         return -1;
@@ -96,7 +90,7 @@ int main()
                     int value;
                     printf("Enter integer to add to int matrix: ");
                     scanf("%d", &value);
-                    matrixPushBack(vec, &value);
+                    // matrixPushBack(vec, &value);
                 }
                 else
                 {
@@ -119,7 +113,7 @@ int main()
                 \ncreate complex '3r+4i' and add it to complex matrix: ");
                     scanf("%d %d", &real, &imag);
                     Complex complex = {real, imag};
-                    matrixPushBack(vec, &complex);
+                    // matrixPushBack(vec, &complex);
                 }
                 else
                 {
@@ -173,24 +167,24 @@ int main()
             // matricx transpose
             {
                 // транспонирование матрицы
-            //     char nameFirstArg[20];
-            //     char nameSecondArg[20];
-            //     char nameResult[20];
-            //     printf("Enter matrix names like this 'v1 v2 res': ");
-            //     scanf("%19s %19s %19s", nameFirstArg, nameSecondArg, nameResult);
-            //     Matrix *vec1 = matrixFindInCollection(&collection, nameFirstArg);
-            //     Matrix *vec2 = matrixFindInCollection(&collection, nameSecondArg);
-            //     Matrix *vecRes = matrixFindInCollection(&collection, nameResult);
-            //     if (vec1 && vec2 && vecRes)
-            //     {
-            //         matrixSum(vecRes, vec1, vec2);
-            //     }
-            //     else
-            //     {
-            //         printf("Some matrices not found.\n");
-            //     }
-            //     break;
-            // }
+                //     char nameFirstArg[20];
+                //     char nameSecondArg[20];
+                //     char nameResult[20];
+                //     printf("Enter matrix names like this 'v1 v2 res': ");
+                //     scanf("%19s %19s %19s", nameFirstArg, nameSecondArg, nameResult);
+                //     Matrix *vec1 = matrixFindInCollection(&collection, nameFirstArg);
+                //     Matrix *vec2 = matrixFindInCollection(&collection, nameSecondArg);
+                //     Matrix *vecRes = matrixFindInCollection(&collection, nameResult);
+                //     if (vec1 && vec2 && vecRes)
+                //     {
+                //         matrixSum(vecRes, vec1, vec2);
+                //     }
+                //     else
+                //     {
+                //         printf("Some matrices not found.\n");
+                //     }
+                //     break;
+            }
         case 8:
         {
             // show martix by name

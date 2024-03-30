@@ -6,18 +6,13 @@
     с-код, реализующий интерфейс для работы с векторами
 */
 
-void matrixInit(Matrix* v, size_t columns, size_t rows, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement)
+int matrixInit(Matrix *v, unsigned int columns, unsigned int rows, size_t elemSize, SumMatrixElements sumElements, MultMatrixElements multElements, PrintMatrixElement printElement)
 {
-    v->data = malloc(columns * rows * elemSize);
-    if (v->data == NULL) 
+    v->data = calloc(columns * rows, elemSize);
+    if (v->data == NULL)
     {
-        return;
+        return -1;
         // ошибка выделения памяти
-    }
-     
-    for (int i=1; i < columns * rows; i++) 
-    {
-        
     }
     v->columns = columns;
     v->rows = rows;
@@ -25,8 +20,8 @@ void matrixInit(Matrix* v, size_t columns, size_t rows, size_t elemSize, SumMatr
     v->sumElements = sumElements;
     v->multElements = multElements;
     v->printElement = printElement;
+    return 0;
 }
-
 
 void matrixFree(Matrix *v)
 {
@@ -34,56 +29,72 @@ void matrixFree(Matrix *v)
     v->data = NULL;
 }
 
-// пока так
-void setMatrixElement(Matrix* v, size_t column, size_t row, const void* value) {
+void setMatrixElement(Matrix *v, unsigned int column, unsigned int row, const void *value)
+{
     size_t index = (row * v->columns + column) * v->elemSize;
-    memcpy((char*)v->data + index, value, v->elemSize);
+    memcpy(v->data + index, value, v->elemSize);
 }
 
-void* getMatrixElement(const Matrix* v, size_t column, size_t row) {
+void *getMatrixElement(const Matrix *v, unsigned int column, unsigned int row)
+{
     size_t index = (row * v->columns + column) * v->elemSize;
-    return (char*)v->data + index;
+    return v->data + index;
 }
 
-
-void matrixSum(Matrix *res, const Matrix *v1, const Matrix *v2) {
-    if (v1->columns != v2->columns || v1->rows != v2->rows || v1->elemSize != v2->elemSize) {
+int matrixSum(Matrix *res, const Matrix *v1, const Matrix *v2)
+{
+    int ok = 0;
+    if (v1->columns != v2->columns || v1->rows != v2->rows || v1->elemSize != v2->elemSize)
+    {
         // Матрицы должны иметь одинаковые размеры и тип элементов для выполнения сложения
         // написать разные ошибки
-        return;
+        return -1;
+    }
+    if (ok = matrixInit(res, v1->columns, v1->rows, v1->elemSize, v1->sumElements, v1->multElements, v1->printElement) != 0)
+    {
+        return -2;
     }
 
-    size_t numElements = v1->columns * v1->rows;
-    for (size_t i = 0; i < numElements; i++) {
-        v1->sumElements((char*)res->data + i * res->elemSize, (char*)v1->data + i * v1->elemSize, (char*)v2->data + i * v2->elemSize);
+    unsigned int numElements = v1->columns * v1->rows;
+    for (unsigned int i = 0; i < numElements; i++)
+    {
+        v1->sumElements(res->data + i * res->elemSize, v1->data + i * v1->elemSize, v2->data + i * v2->elemSize);
     }
+    return 0;
 }
 
-void matrixMult(Matrix* res, const Matrix* v1, const Matrix* v2) {
-    if (v1->columns != v2->rows || v1->elemSize != v2->elemSize) {
+int matrixMult(Matrix *res, const Matrix *v1, const Matrix *v2)
+{
+    int ok;
+    if (v1->columns != v2->rows || v1->elemSize != v2->elemSize)
+    {
         // Умножение матриц возможно только если количество столбцов первой матрицы равно количеству строк второй матрицы
         // и если тип элементов в матрицах одинаковый
-        return;
+        return -1;
     }
 
-    size_t resRows = v1->rows;
-    size_t resColumns = v2->columns;
-    size_t elemSize = v1->elemSize;
+    unsigned int resRows = v1->rows;
+    unsigned int resColumns = v2->columns;
+    unsigned int elemSize = v1->elemSize;
 
-    // переписать отсюда 
+    // переписать отсюда
     // Выделяем память под результирующую матрицу
-    res->data = malloc(resRows * resColumns * elemSize);
-    if (res->data == NULL) {
-        return;
+
+    if (ok = matrixInit(res, resColumns, resRows, elemSize, v1->sumElements, v1->multElements, v1->printElement) != 0)
+    {
+        return -2;
     }
 
     // Вычисление умножения матриц
-    for (size_t i = 0; i < resRows; i++) {
-        for (size_t j = 0; j < resColumns; j++) {
-            for (size_t k = 0; k < v1->columns; k++) {
-                void* resElem = (char*)res->data + (i * resColumns + j) * elemSize;
-                void* v1Elem = (char*)v1->data + (i * v1->columns + k) * elemSize;
-                void* v2Elem = (char*)v2->data + (k * v2->columns + j) * elemSize;
+    for (unsigned int i = 0; i < resRows; i++)
+    {
+        for (unsigned int j = 0; j < resColumns; j++)
+        {
+            for (unsigned int k = 0; k < v1->columns; k++)
+            {
+                void *resElem = (char *)res->data + (i * resColumns + j) * elemSize;
+                void *v1Elem = (char *)v1->data + (i * v1->columns + k) * elemSize;
+                void *v2Elem = (char *)v2->data + (k * v2->columns + j) * elemSize;
                 v1->sumElements(resElem, resElem, resElem);
                 v1->multElements(resElem, v1Elem, v2Elem);
             }
@@ -97,41 +108,8 @@ void matrixMult(Matrix* res, const Matrix* v1, const Matrix* v2) {
     res->sumElements = v1->sumElements;
     res->multElements = v1->multElements;
     res->printElement = v1->printElement;
+    return 0;
 }
-
-
-// void matrixSum(Matrix *res, const Matrix *v1, const Matrix *v2)
-// {
-    // if (v1->size == v2->size && v1->elemSize == v2->elemSize && v1->sumElements != NULL)
-    // {
-    //     matrixInit(res, v1->elemSize, v1->sumElements, v1->printElement);
-    //     // Временное хранилище для результата сложения двух элементов
-    //     void *tempResult = malloc(v1->elemSize);
-    //     if (tempResult == NULL)
-    //     {
-    //         // Можно вставить обработку ошибки выделения памяти
-    //         return;
-    //     }
-
-    //     for (size_t i = 0; i < v1->size; i++)
-    //     {
-    //         // Получаем указатели на текущие элементы обоих векторов
-    //         const void *elem1 = (const char *)v1->data + i * v1->elemSize;
-    //         const void *elem2 = (const char *)v2->data + i * v2->elemSize;
-
-    //         // Складываем элементы callback функцией
-    //         v1->sumElements(tempResult, elem1, elem2);
-
-    //         // Добавляем результат в результирующий вектор
-    //         matrixPushBack(res, tempResult);
-    //     }
-    //     free(tempResult); // Освобождаем временное хранилище
-    // }
-    // else
-    // {
-    //     // Ошибка: векторы разной длины, разного размера элементов или функция сложения не определена
-    // }
-// }
 
 void matrixPrintElements(const Matrix *v)
 {
@@ -165,4 +143,7 @@ Matrix *matrixFindInCollection(MatrixCollection *collection, const char *name)
 
 // void matrixMult(Matrix* res, const Matrix* v1, const Matrix* v2);
 
-void matrixT(Matrix* res, const Matrix* v);
+int matrixT(Matrix *res, const Matrix *v)
+{
+    return 0;
+}
